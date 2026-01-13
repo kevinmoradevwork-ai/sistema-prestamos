@@ -69,7 +69,6 @@ def generar_plan_pagos(prestamo, total_pagado):
     elif frecuencia == 'quincenal': proxima = calcular_siguiente_quincena(fecha_inicio)
     else: proxima = fecha_inicio + timedelta(days=30)
 
-    # Lógica Capital Rey
     pagadas_full = 0; temp = dinero
     for i in range(1, num_cuotas + 1):
         if temp >= (cuota_base - 0.05): temp = round(temp - cuota_base, 2); pagadas_full += 1
@@ -108,7 +107,7 @@ def generar_plan_pagos(prestamo, total_pagado):
         else: proxima += timedelta(days=30)
     return plan
 
-# --- PLANTILLA HTML (PWA READY + CORRECCIÓN VISUAL) ---
+# --- PLANTILLA HTML (CORREGIDA VISUALMENTE) ---
 HTML_CABECERA = """
 <!DOCTYPE html>
 <html lang="es" data-theme="light">
@@ -121,7 +120,6 @@ HTML_CABECERA = """
     <meta name="apple-mobile-web-app-title" content="PrestamosApp">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="https://img.icons8.com/color/48/banknotes.png">
-    
     <title>PrestamosApp Ni</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -129,57 +127,35 @@ HTML_CABECERA = """
         :root { --primary: #0f3460; --accent: #e94560; --success: #27ae60; --danger: #c0392b; --warning: #f39c12; --info: #16213e; --bg: #f2f2f2; --card-bg: #ffffff; --text: #1a1a2e; --border: #dcdcdc; --muted: #666; --table-head: #e8e8e8; --table-row: #f9f9f9; }
         [data-theme="dark"] { --primary: #3282b8; --accent: #ff2e63; --success: #00b894; --danger: #ff7675; --warning: #ffeaa7; --info: #0f3460; --bg: #0f172a; --card-bg: #1e293b; --text: #e2e8f0; --border: #334155; --muted: #94a3b8; --table-head: #334155; --table-row: #1e293b; }
         * { box-sizing: border-box; } body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; transition: background-color 0.3s; }
-        
         .navbar { background-color: var(--info); padding: 1rem; display: flex; justify-content: space-between; align-items: center; color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
         .navbar-brand { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
         .navbar-menu a { color: #e2e8f0; text-decoration: none; margin-left: 15px; font-weight: 500; }
         .container { max-width: 1100px; margin: 1.5rem auto; padding: 0 1rem; padding-bottom: 80px; }
         .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.08); border: 1px solid var(--border); }
         .card h3 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; font-weight: 700; }
-        
         label { display: block; margin-bottom: 5px; font-size: 0.8rem; font-weight: 600; color: var(--muted); }
         input, select { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text); font-size: 15px; }
-        
         .btn { display: inline-flex; justify-content: center; align-items: center; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; cursor: pointer; border: none; font-size: 0.9rem; gap: 5px; }
         .btn-primary { background-color: var(--primary); color: white; } .btn-success { background-color: var(--success); color: white; } .btn-danger { background-color: var(--danger); color: white; } .btn-warning { background-color: var(--warning); color: #1a1a2e; } .btn-info { background-color: var(--info); color: white; } .btn-whatsapp { background-color: #25D366; color: white; } .btn-outline { border: 1px solid var(--border); color: var(--text); background: var(--card-bg); } .btn-full { width: 100%; } .btn-sm { padding: 6px 10px; font-size: 0.75rem; }
-        
         .search-bar { display: flex; gap: 8px; margin-bottom: 15px; }
         .table-wrapper { overflow-x: auto; max-height: 350px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; min-width: 100%; }
         thead th { position: sticky; top: 0; background-color: var(--table-head); z-index: 10; text-align: left; padding: 10px; font-size: 0.75rem; color: var(--text); font-weight: 700; text-transform: uppercase; border-bottom: 2px solid var(--border); }
         td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--text); vertical-align: middle; }
         tbody tr:nth-child(even) { background-color: var(--table-row); }
-        
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; } .grid-4-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-card { text-align: center; padding: 15px; color: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .stat-label { font-size: 0.75rem; opacity: 0.9; text-transform: uppercase; margin-bottom: 5px; } .stat-number { font-size: 1.6rem; font-weight: 800; margin: 0; }
-        
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; } .paid { background: #d4edda; color: #155724; } .pending { background: #f8d7da; color: #721c24; } .partial { background: #fff3cd; color: #856404; } .mora-row { color: var(--danger); font-weight: bold; background: rgba(192, 57, 43, 0.1); border-left: 4px solid var(--danger); }
-        
         .theme-toggle { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: none; z-index: 2000; }
         .greeting-anim { animation: fadeIn 2s ease-in-out; font-size: 1.2rem; font-weight: 300; color: #e2e8f0; margin-right: 15px; }
         @keyframes fadeIn { 0% { opacity: 0; transform: translateY(-10px); } 100% { opacity: 1; transform: translateY(0); } }
-        
         .summary-card { background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .summary-amount { font-size: 2.5rem; font-weight: 800; margin: 0; }
         .alert-mora { background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); } .alert-ok { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
-        
-        /* AQUÍ ESTÁ EL ARREGLO VISUAL */
         .print-header { display: none; }
-        
         @media (max-width: 768px) { .grid-2, .grid-3, .navbar, .grid-4-dashboard { grid-template-columns: 1fr; flex-direction: column; display: flex; } .navbar-menu { width: 100%; justify-content: space-around; margin-top: 10px; } .grid-3 { gap: 10px; } .greeting-anim { display: none; } }
-        
-        @media print { 
-            .no-print, .search-bar, .btn, .theme-toggle { display: none !important; } 
-            .card { border: none; shadow: none; padding: 0; margin-bottom: 0; background: white; color: black; } 
-            .hide-on-print { display: none !important; } 
-            body { background: white; color: black; font-size: 11pt; } 
-            .navbar { display: none; } 
-            .table-wrapper { max-height: none; overflow: visible; border: none; } 
-            .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; } 
-            .stat-card { color: black !important; background: white !important; border: 1px solid #ccc; } 
-            [data-theme="dark"] { --text: black; --bg: white; --card-bg: white; } 
-        }
+        @media print { .no-print, .search-bar, .btn, .theme-toggle { display: none !important; } .card { border: none; shadow: none; padding: 0; margin-bottom: 0; background: white; color: black; } .hide-on-print { display: none !important; } body { background: white; color: black; font-size: 11pt; } .navbar { display: none; } .table-wrapper { max-height: none; overflow: visible; border: none; } .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; } .stat-card { color: black !important; background: white !important; border: 1px solid #ccc; } [data-theme="dark"] { --text: black; --bg: white; --card-bg: white; } }
     </style>
 </head>
 <body>
@@ -214,31 +190,12 @@ HTML_PIE = """</div>
     </script>
 </body></html>"""
 
-# --- RUTA MANIFEST.JSON (PARA PWA) ---
+# --- RUTA MANIFEST.JSON ---
 @app.route('/manifest.json')
 def manifest():
-    return jsonify({
-        "name": "PrestamosApp Ni",
-        "short_name": "Prestamos",
-        "start_url": "/",
-        "display": "standalone",
-        "background_color": "#0f3460",
-        "theme_color": "#0f3460",
-        "icons": [
-            {
-                "src": "https://img.icons8.com/color/192/banknotes.png",
-                "sizes": "192x192",
-                "type": "image/png"
-            },
-            {
-                "src": "https://img.icons8.com/color/512/banknotes.png",
-                "sizes": "512x512",
-                "type": "image/png"
-            }
-        ]
-    })
+    return jsonify({"name": "PrestamosApp Ni", "short_name": "Prestamos", "start_url": "/", "display": "standalone", "background_color": "#0f3460", "theme_color": "#0f3460", "icons": [{"src": "https://img.icons8.com/color/192/banknotes.png", "sizes": "192x192", "type": "image/png"}, {"src": "https://img.icons8.com/color/512/banknotes.png", "sizes": "512x512", "type": "image/png"}]})
 
-# --- RESTO DE RUTAS ---
+# --- RUTAS DE APLICACIÓN (TODAS INCLUIDAS) ---
 @app.route('/')
 def home(): return render_template_string(HTML_CABECERA + """<div style="text-align: center; padding: 50px 0;"><h1 style="color: var(--primary); font-size: 2.5rem; margin-bottom: 10px;">Gestión de Préstamos</h1><div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;"><a href='/admin_login' class="btn btn-primary btn-lg">Acceso Administrador</a><a href='/cliente_login' class="btn btn-outline btn-lg">Acceso Cliente</a></div></div>""" + HTML_PIE)
 
@@ -315,12 +272,127 @@ def admin():
     </div>
     """ + HTML_PIE, clientes_list=clientes, query=search_query, capital_colocado_total=capital_colocado_total, total_recaudado=total_recaudado, ganancia_neta=ganancia_neta, fondo_disponible=fondo_disponible, reporte_cli=lista_reporte_clientes)
 
+# --- RUTAS RECUPERADAS (SOLUCIÓN 404) ---
 @app.route('/vaciar_fondo', methods=['POST'])
 def vaciar_fondo():
     if not session.get('admin_logged_in'): return redirect('/admin_login')
     conn = get_db_connection(); cursor = conn.cursor()
     cursor.execute("INSERT INTO retiros_fondo (monto, fecha) VALUES (?, ?)", (request.form['monto'], datetime.now())); conn.commit(); conn.close()
     flash('Fondo retirado'); return redirect('/admin')
+
+@app.route('/add_cliente', methods=['POST'])
+def add_cliente():
+    if not session.get('admin_logged_in'): return redirect('/admin_login')
+    try:
+        conn = get_db_connection(); cursor = conn.cursor()
+        pin_generado = str(random.randint(1000, 9999)) 
+        cursor.execute("INSERT INTO clientes (nombre, cedula, telefono, pin) VALUES (?, ?, ?, ?)", (request.form['nombre'].strip(), request.form['cedula'], request.form['telefono'], pin_generado))
+        conn.commit(); conn.close()
+        flash(f'✅ Cliente guardado. SU PIN DE ACCESO ES: {pin_generado}') 
+    except: flash('Error: Nombre existente')
+    return redirect('/admin')
+
+@app.route('/add_prestamo', methods=['POST'])
+def add_prestamo():
+    if not session.get('admin_logged_in'): return redirect('/admin_login')
+    monto = float(request.form['monto']); tasa = float(request.form['tasa']); meses = int(request.form['meses']); frecuencia = request.form['frecuencia']
+    fecha_custom = request.form.get('fecha_custom')
+    if fecha_custom: fecha_inicio_obj = datetime.strptime(fecha_custom, '%Y-%m-%d'); fecha_inicio = fecha_inicio_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
+    else: fecha_inicio = datetime.now()
+    aplica_seguro = 1 if request.form.get('seguro') else 0
+    interes = monto * (tasa * meses / 100); total_bruto = monto + interes
+    if frecuencia == 'semanal': cuotas = meses * 4
+    elif frecuencia == 'quincenal': cuotas = meses * 2
+    else: cuotas = meses
+    valor_cuota_exacta = round(total_bruto / cuotas, 2); total_final_exacto = round(valor_cuota_exacta * cuotas, 2)
+    conn = get_db_connection(); cursor = conn.cursor()
+    cursor.execute('''INSERT INTO prestamos (cliente_id, monto_original, tasa_mensual, duracion_meses, frecuencia_pago, num_cuotas, monto_cuota, total_pagar, fecha_inicio, estado_prestamo, aplica_seguro) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO', ?)''', 
+                 (request.form['cliente_id'], monto, tasa, meses, frecuencia, cuotas, valor_cuota_exacta, total_final_exacto, fecha_inicio, aplica_seguro))
+    conn.commit(); conn.close(); flash('Préstamo creado')
+    return redirect('/admin')
+
+@app.route('/add_pago', methods=['POST'])
+def add_pago():
+    if not session.get('admin_logged_in'): return redirect('/admin_login')
+    conn = get_db_connection(); cursor = conn.cursor()
+    cursor.execute("INSERT INTO pagos (prestamo_id, monto, fecha) VALUES (?, ?, ?)", (request.form['prestamo_id'], request.form['monto_pago'], datetime.now()))
+    conn.commit(); conn.close(); flash('Pago registrado')
+    if request.form.get('origen') == 'detalle': return redirect(f"/admin/cliente/{request.form['cliente_id']}")
+    return redirect('/admin')
+
+@app.route('/delete_cliente/<int:id>')
+def delete_cliente(id):
+    if not session.get('admin_logged_in'): return redirect('/admin_login')
+    conn = get_db_connection(); cursor = conn.cursor()
+    cursor.execute("DELETE FROM pagos WHERE prestamo_id IN (SELECT id FROM prestamos WHERE cliente_id=?)", (id,))
+    cursor.execute("DELETE FROM cargos_extra WHERE prestamo_id IN (SELECT id FROM prestamos WHERE cliente_id=?)", (id,))
+    cursor.execute("DELETE FROM prestamos WHERE cliente_id=?", (id,))
+    cursor.execute("DELETE FROM clientes WHERE id=?", (id,))
+    conn.commit(); conn.close(); flash('Cliente eliminado completamente')
+    return redirect('/admin')
+
+@app.route('/ver_plan/<int:prestamo_id>')
+def ver_plan(prestamo_id):
+    conn = get_db_connection(); conn.row_factory = sqlite3.Row; cursor = conn.cursor()
+    cursor.execute('''SELECT p.*, c.nombre FROM prestamos p JOIN clientes c ON p.cliente_id = c.id WHERE p.id=?''', (prestamo_id,))
+    p = cursor.fetchone()
+    cursor.execute("SELECT * FROM pagos WHERE prestamo_id=? ORDER BY fecha DESC", (prestamo_id,)); historial = cursor.fetchall()
+    cursor.execute("SELECT * FROM cargos_extra WHERE prestamo_id=? ORDER BY fecha DESC", (prestamo_id,)); cargos = cursor.fetchall()
+    movimientos = []
+    for h in historial: movimientos.append({'id': h['id'], 'fecha': h['fecha'], 'monto': h['monto'], 'tipo': 'ABONO', 'color': 'green'})
+    for cargo in cargos: movimientos.append({'id': None, 'fecha': cargo['fecha'], 'monto': cargo['monto'], 'tipo': cargo['motivo'], 'color': 'red'})
+    movimientos.sort(key=lambda x: x['fecha'], reverse=True)
+    cursor.execute("SELECT COALESCE(SUM(monto), 0) FROM pagos WHERE prestamo_id=?", (prestamo_id,)); pagado = cursor.fetchone()[0]
+    conn.close()
+    plan = generar_plan_pagos(p, pagado)
+    return render_template_string(HTML_CABECERA + """
+    <div class="no-print" style="margin-bottom:15px; display:flex; justify-content:space-between;">
+        <a href="javascript:history.back()" class="btn btn-outline btn-sm">← Volver</a>
+        <button onclick="window.print()" class="btn btn-primary btn-sm">🖨️ Imprimir / Descargar PDF</button>
+    </div>
+    <div class="print-header"><h2>Tabla de Amortización</h2><p><strong>Cliente:</strong> {{ p['nombre'] }}</p><p>Generado: <script>document.write(new Date().toLocaleDateString())</script></p></div>
+    <div class="card">
+        <h3 class="no-print">Plan de Pagos: {{ p['nombre'] }}</h3>
+        <div style="background:var(--card-bg); padding:15px; border-radius:10px; margin-bottom:20px; font-size:0.9rem; border:1px solid var(--border);">
+            <strong>Monto Original:</strong> C${{ "{:,.2f}".format(p['monto_original']) }}<br>
+            <strong>Total a Pagar:</strong> C${{ "{:,.2f}".format(p['total_pagar']) }}<br>
+            <strong>{{ p['num_cuotas'] }} Cuotas</strong> de <strong>C${{ "{:,.2f}".format(p['monto_cuota']) }}</strong> ({{ p['frecuencia_pago'] }})
+        </div>
+        <h4 style="margin-bottom:10px;">Proyección de Cuotas</h4>
+        <div class="table-wrapper"><table>
+        <thead><tr><th>#</th><th>Fecha</th><th>Monto</th><th>Estado</th></tr></thead>
+        <tbody>{% for f in plan %}<tr>
+            <td>{{ f['numero'] }}</td><td>{{ f['fecha'] }}</td>
+            <td>C${{ "{:,.2f}".format(f['monto']) }}{% if f['detalle'] %}{{ f['detalle']|safe }}{% endif %}</td>
+            <td><span class="badge {{ f['clase'] }}">{{ f['estado'] }}</span></td>
+        </tr>{% endfor %}</tbody>
+        </table></div>
+        {% if movs %}
+        <h4 style="margin-top:30px; margin-bottom:10px; color:var(--primary); border-top:1px solid var(--border); padding-top:15px;">Historial de Movimientos</h4>
+        <div class="table-wrapper"><table>
+        <thead><tr><th>Fecha Real</th><th>Concepto</th><th>Monto</th><th class="no-print">Acción</th></tr></thead>
+        <tbody>{% for h in movs %}<tr>
+            <td>{{ h['fecha'][:19] }}</td><td>{{ h['tipo'] }}</td>
+            <td style="color:{{ h['color'] }}; font-weight:bold;">{% if h['color'] == 'red' %}+{% else %}-{% endif %} C${{ "{:,.2f}".format(h['monto']) }}</td>
+            <td class="no-print">{% if h['tipo'] == 'ABONO' %}<a href="/recibo/{{ h['id'] }}" class="btn btn-info btn-sm" style="padding:2px 8px; font-size:0.7rem;">📄 Recibo</a>{% endif %}</td>
+        </tr>{% endfor %}</tbody>
+        </table></div>
+        {% endif %}
+    </div>""" + HTML_PIE, p=p, plan=plan, movs=movimientos)
+
+@app.route('/exportar_excel')
+def exportar_excel():
+    if not session.get('admin_logged_in'): return redirect('/admin_login')
+    conn = get_db_connection(); cursor = conn.cursor()
+    query = '''SELECT c.nombre, c.cedula, c.telefono, p.id, p.monto_original, p.total_pagar, p.fecha_inicio, p.estado_prestamo, COALESCE(SUM(pg.monto), 0) 
+               FROM clientes c JOIN prestamos p ON c.id = p.cliente_id LEFT JOIN pagos pg ON p.id = pg.prestamo_id GROUP BY p.id ORDER BY c.nombre'''
+    cursor.execute(query); filas = cursor.fetchall(); conn.close()
+    output = io.StringIO(); writer = csv.writer(output)
+    writer.writerow(['Cliente', 'Cedula', 'Telefono', 'ID Prestamo', 'Monto Original', 'Total Deuda', 'Pagado', 'Saldo', 'Fecha', 'Estado'])
+    for f in filas: writer.writerow([f[0], f[1], f[2], f[3], f[4], f[5], f[8], f[5]-f[8], f[6], f[7]])
+    output.seek(0)
+    return Response(output, mimetype="text/csv", headers={"Content-Disposition":"attachment;filename=reporte.csv"})
 
 @app.route('/editar_cliente/<int:id>', methods=['GET', 'POST'])
 def editar_cliente(id):
