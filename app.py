@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = 'clave_secreta_super_segura' 
 
 # --- CONFIGURACIÓN ---
-PASSWORD_ADMIN = "admin123" 
+PASSWORD_ADMIN = "Moralis1017" 
 
 # --- BASE DE DATOS ---
 def get_db_connection():
